@@ -72,13 +72,12 @@ class GarminClient:
         )
 
         self.cookiejar = auth_response.cookiejar
-        print(self.cookiejar)
 
         if auth_response.status != 200:
             raise ValueError("authentication failure: did you enter valid credentials?")
 
         auth_ticket_url = self._extract_auth_ticket_url(auth_response.content.decode())
-        response = thttp.request(auth_ticket_url, cookiejar=self.cookiejar)
+        response = thttp.request(auth_ticket_url, cookiejar=self.cookiejar, headers=headers)
 
         if response.status != 200:
             raise RuntimeError(

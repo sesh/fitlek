@@ -5,13 +5,12 @@ It's call `FITlek` because the original intention was to create a `.fit` file th
 
 ### Usage
 
-Right now, the easiest way to create a new workout for yourself if to clone the repo and run the script. The only requirement is `requests`, so if you already have a recent version installed you may not need `pipenv`.
+Right now, the easiest way to create a new workout for yourself if to clone the repo and run the script. There are no requirements other than a modern version pf Python 3 (tested with 3.8).
 
 ```
 > git clone https://github.com/sesh/fitlek.git
 > cd fitlek
-> pipenv install
-> pipenv run python fitlek.py --duration=30:00 --target-pace=04:00 --username="your-garmin-connect-username" --password="your-garmin-connect-password"
+> python3 fitlek.py --duration=30:00 --target-pace=04:00 --username="your-garmin-connect-username" --password="your-garmin-connect-password"
 ```
 
 Running the above should result in a new workout that looks something like this:

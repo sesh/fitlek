@@ -5,7 +5,7 @@ import random
 import re
 import sys
 
-import requests
+import thttp
 
 SSO_LOGIN_URL = "https://sso.garmin.com/sso/signin"
 
@@ -45,10 +45,9 @@ class GarminClient:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.session = None
+        self.cookiejar = None
 
     def connect(self):
-        self.session = requests.Session()
         self._authenticate()
 
     def _authenticate(self):
@@ -57,26 +56,36 @@ class GarminClient:
             "password": self.password,
             "embed": "false",
         }
-        request_params = {"service": "https://connect.garmin.com/modern"}
-        headers = {"origin": "https://sso.garmin.com"}
-        auth_response = self.session.post(
-            SSO_LOGIN_URL, headers=headers, params=request_params, data=form_data
-        )
-        if auth_response.status_code != 200:
-            raise ValueError("authentication failure: did you enter valid credentials?")
-        auth_ticket_url = self._extract_auth_ticket_url(auth_response.text)
 
-        response = self.session.get(auth_ticket_url)
-        if response.status_code != 200:
+        request_params = {"service": "https://connect.garmin.com/modern"}
+        headers = {
+            "origin": "https://sso.garmin.com",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0",
+        }
+
+        auth_response = thttp.request(
+            SSO_LOGIN_URL,
+            headers=headers,
+            params=request_params,
+            data=form_data,
+            method="POST",
+        )
+
+        self.cookiejar = auth_response.cookiejar
+        print(self.cookiejar)
+
+        if auth_response.status != 200:
+            raise ValueError("authentication failure: did you enter valid credentials?")
+
+        auth_ticket_url = self._extract_auth_ticket_url(auth_response.content.decode())
+        response = thttp.request(auth_ticket_url, cookiejar=self.cookiejar)
+
+        if response.status != 200:
             raise RuntimeError(
                 "auth failure: failed to claim auth ticket: {}: {}\n{}".format(
-                    auth_ticket_url, response.status_code, response.text
+                    auth_ticket_url, response.status, response.content
                 )
             )
-
-        # appears like we need to touch base with the old API to initiate
-        # some form of legacy session. otherwise certain downloads will fail.
-        # self.session.get("https://connect.garmin.com/legacy/session")
 
     @staticmethod
     def _extract_auth_ticket_url(auth_response):
@@ -89,16 +98,18 @@ class GarminClient:
         return auth_ticket_url
 
     def add_workout(self, workout):
-        response = self.session.post(
+        response = thttp.request(
             "https://connect.garmin.com/modern/proxy/workout-service/workout",
+            method="POST",
             json=workout.json(),
             headers={
                 "Referer": "https://connect.garmin.com/modern/workout/create/running",
                 "NK": "NT",
             },
+            cookiejar=self.cookiejar,
         )
 
-        return response.json()
+        return response.json
 
 
 class Workout:
@@ -320,7 +331,7 @@ def parse_args(args):
         for a in args
         if "--" in a
     }
-    result["[]"] = [a for a in args if not a.startswith('--')]
+    result["[]"] = [a for a in args if not a.startswith("--")]
     return result
 
 
@@ -334,14 +345,26 @@ def get_or_throw(d, key, error):
 if __name__ == "__main__":
     args = parse_args(sys.argv)
 
-    duration = get_or_throw(args, '--duration', 'The --duration value is required (format: HH:MM)')
-    target_pace = get_or_throw(args, '--target-pace', 'The --target-pace value is required (format: MM:MM - mins/km)')
-    username = get_or_throw(args, '--username', 'The Garmin Connect --username value is required')
-    password = get_or_throw(args, '--password', 'The Garmin Connect --password value is required')
+    duration = get_or_throw(
+        args, "--duration", "The --duration value is required (format: HH:MM)"
+    )
+    target_pace = get_or_throw(
+        args,
+        "--target-pace",
+        "The --target-pace value is required (format: MM:MM - mins/km)",
+    )
+    username = get_or_throw(
+        args, "--username", "The Garmin Connect --username value is required"
+    )
+    password = get_or_throw(
+        args, "--password", "The Garmin Connect --password value is required"
+    )
 
     workout = create_workout(duration, target_pace)
 
     client = GarminClient(username, password)
     client.connect()
     client.add_workout(workout)
-    print("Added workout. Check https://connect.garmin.com/modern/workouts and get ready to run!")
+    print(
+        "Added workout. Check https://connect.garmin.com/modern/workouts and get ready to run!"
+    )

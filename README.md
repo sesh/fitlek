@@ -15,7 +15,7 @@ Right now, the easiest way to create a new workout for yourself if to clone the 
 
 Running the above should result in a new workout that looks something like this:
 
-![images/workout.png](Sample Workout)
+![workout](images/workout.png)
 
 
 ### Acknowledgements

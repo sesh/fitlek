@@ -1,11 +1,10 @@
-#! /usr/bin/env python
-
 import json
 import random
 import re
 import sys
 
-import thttp
+from .utils import request
+
 
 SSO_LOGIN_URL = "https://sso.garmin.com/sso/signin"
 
@@ -63,7 +62,7 @@ class GarminClient:
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0",
         }
 
-        auth_response = thttp.request(
+        auth_response = request(
             SSO_LOGIN_URL,
             headers=headers,
             params=request_params,
@@ -77,7 +76,7 @@ class GarminClient:
             raise ValueError("authentication failure: did you enter valid credentials?")
 
         auth_ticket_url = self._extract_auth_ticket_url(auth_response.content.decode())
-        response = thttp.request(auth_ticket_url, cookiejar=self.cookiejar, headers=headers)
+        response = request(auth_ticket_url, cookiejar=self.cookiejar, headers=headers)
 
         if response.status != 200:
             raise RuntimeError(
@@ -97,17 +96,21 @@ class GarminClient:
         return auth_ticket_url
 
     def add_workout(self, workout):
-        response = thttp.request(
+        response = request(
             "https://connect.garmin.com/modern/proxy/workout-service/workout",
             method="POST",
             json=workout.json(),
             headers={
                 "Referer": "https://connect.garmin.com/modern/workout/create/running",
                 "NK": "NT",
+                "X-app-ver": "4.38.2.0",
+                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0",
             },
             cookiejar=self.cookiejar,
         )
 
+        if response.status > 299:
+            print(response)
         return response.json
 
 
@@ -218,152 +221,3 @@ class Target:
             "targetValueTwo": self.from_value,
             "zoneNumber": self.zone,
         }
-
-
-def mmss_to_seconds(s):
-    parts = s.split(":")
-
-    if len(parts) == 2:
-        return int(parts[0]) * 60 + int(parts[1])
-    else:
-        raise Exception("Invalid duration provided, must use mm:ss format")
-
-
-def seconds_to_mmss(seconds):
-    mins = int(seconds / 60)
-    seconds = seconds - mins * 60
-    return f"{mins:02}:{seconds:02}"
-
-
-def pace_to_ms(pace):
-    seconds = mmss_to_seconds(pace)
-    km_h = 60 / (seconds / 60)
-    return km_h * 0.27778
-
-
-def fartlek(target_time):
-    target_seconds = mmss_to_seconds(target_time)
-
-    if target_seconds >= 30 * 60:
-        # runs greater than 30 minutes == 10 minute warmup / cooldown
-        warmup = 60 * 10
-        cooldown = 60 * 10
-    elif target_seconds >= 20 * 60:
-        # runs greater than 20 mins == 8 mins warmup + 4 mins cooldown
-        warmup = 60 * 8
-        cooldown = 60 * 4
-    else:
-        # all other runs get a 5 minute warmup and 2 minute cooldown
-        warmup = 60 * 5
-        cooldown = 60 * 2
-
-    workout = [warmup, cooldown]
-
-    while sum(workout) < target_seconds:
-        # add an interval, recovery pair
-        interval = 15 * random.randint(2, 8)
-        recovery = interval + 15 * random.randint(2, 4)
-
-        workout.insert(-1, interval)
-        workout.insert(-1, recovery)
-
-    if sum(workout) > target_seconds:
-        # remove the last interval and increase something by the amount remaining
-        workout.pop(-2) + workout.pop(-2)
-        remaining = target_seconds - sum(workout)
-        i = random.randint(1, len(workout) - 1)
-        workout[i] += remaining
-
-    return workout
-
-
-def create_workout(duration, target_pace):
-    workout_steps = fartlek(duration)
-    target_min = round(pace_to_ms(target_pace), 1)
-    target_max = round(pace_to_ms(target_pace) * 0.85, 1)
-
-    w = Workout("running", f"Fitlek ({duration})")
-    w.add_step(
-        WorkoutStep(
-            1,
-            "warmup",
-            end_condition="time",
-            end_condition_value=seconds_to_mmss(workout_steps.pop(0)),
-        )
-    )
-
-    for i, step in enumerate(workout_steps[:-1]):
-        step_type = "interval" if i % 2 == 0 else "recovery"
-        target = (
-            Target("pace.zone", target_min, target_max)
-            if step_type == "interval"
-            else Target()
-        )
-        w.add_step(
-            WorkoutStep(
-                i + 2,
-                step_type,
-                end_condition="time",
-                end_condition_value=seconds_to_mmss(step),
-                target=target,
-            )
-        )
-
-    w.add_step(
-        WorkoutStep(
-            len(w.workout_steps) + 1,
-            "cooldown",
-            end_condition="time",
-            end_condition_value=seconds_to_mmss(workout_steps[-1]),
-        )
-    )
-    return w
-
-
-def parse_args(args):
-    result = {
-        a.split("=")[0]: int(a.split("=")[1])
-        if "=" in a and a.split("=")[1].isnumeric()
-        else a.split("=")[1]
-        if "=" in a
-        else True
-        for a in args
-        if "--" in a
-    }
-    result["[]"] = [a for a in args if not a.startswith("--")]
-    return result
-
-
-def get_or_throw(d, key, error):
-    try:
-        return d[key]
-    except:
-        raise Exception(error)
-
-
-if __name__ == "__main__":
-    args = parse_args(sys.argv)
-
-    duration = get_or_throw(
-        args, "--duration", "The --duration value is required (format: HH:MM)"
-    )
-    target_pace = get_or_throw(
-        args,
-        "--target-pace",
-        "The --target-pace value is required (format: MM:MM - mins/km)",
-    )
-    username = get_or_throw(
-        args, "--username", "The Garmin Connect --username value is required"
-    )
-    password = get_or_throw(
-        args, "--password", "The Garmin Connect --password value is required"
-    )
-
-    workout = create_workout(duration, target_pace)
-
-    client = GarminClient(username, password)
-    client.connect()
-    client.add_workout(workout)
-    print(
-        "Added workout. Check https://connect.garmin.com/modern/workouts and get ready to run!"
-    )

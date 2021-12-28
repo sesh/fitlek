@@ -7,12 +7,12 @@ from .garmin import Workout, WorkoutStep, Target
 def fartlek(target_time):
     target_seconds = mmss_to_seconds(target_time)
 
-    if target_seconds >= 30 * 60:
-        # runs greater than 30 minutes == 10 minute warmup / cooldown
+    if target_seconds >= 40 * 60:
+        # runs greater than 40 minutes == 10 minute warmup / cooldown
         warmup = 60 * 10
         cooldown = 60 * 10
-    elif target_seconds >= 20 * 60:
-        # runs greater than 20 mins == 8 mins warmup + 4 mins cooldown
+    elif target_seconds >= 25 * 60:
+        # runs greater than 25 mins == 8 mins warmup + 4 mins cooldown
         warmup = 60 * 8
         cooldown = 60 * 4
     else:

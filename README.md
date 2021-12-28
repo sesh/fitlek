@@ -1,11 +1,11 @@
 `fitlek` adds a randomised Fartlek workout to Garmin Connect for you.
 
-It's called `FITlek` because the original intention was to create a `.fit` file that you could upload anywhere – that's still going to be an end goal.
+It's called `FITlek` because the original intention was to create a `.fit` file that you could upload directly to your watch. That might still happen but going directly to Garmin is working for me right now..
 
 
 ### Usage
 
-Right now, the easiest way to create a new workout for yourself if to clone the repo and run the script. There are no requirements other than a modern version pf Python 3 (tested with 3.8).
+The easiest way to create a new workout for yourself if to clone the repo and run the script. There are no requirements other than a modern version of Python 3 (tested with 3.8).
 
 ```
 > git clone https://github.com/sesh/fitlek.git

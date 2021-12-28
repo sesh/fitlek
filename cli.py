@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import json
 import sys
 
 from fitlek.garmin import GarminClient
@@ -37,19 +38,24 @@ if __name__ == "__main__":
         "--target-pace",
         "The --target-pace value is required (format: MM:MM - mins/km)",
     )
-    username = get_or_throw(
-        args, "--username", "The Garmin Connect --username value is required"
-    )
-    password = get_or_throw(
-        args, "--password", "The Garmin Connect --password value is required"
-    )
+
+    if not "--dry-run" in args:
+        username = get_or_throw(
+            args, "--username", "The Garmin Connect --username value is required"
+        )
+        password = get_or_throw(
+            args, "--password", "The Garmin Connect --password value is required"
+        )
 
     workout = create_fartlek_workout(duration, target_pace)
 
-    client = GarminClient(username, password)
-    client.connect()
-    client.add_workout(workout)
+    if '--dry-run' in args:
+        print(json.dumps(workout.json(), indent=2))
+    else:
+        client = GarminClient(username, password)
+        client.connect()
+        client.add_workout(workout)
 
-    print(
-        "Added workout. Check https://connect.garmin.com/modern/workouts and get ready to run!"
-    )
+        print(
+            "Added workout. Check https://connect.garmin.com/modern/workouts and get ready to run!"
+        )

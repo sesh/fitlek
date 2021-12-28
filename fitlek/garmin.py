@@ -3,7 +3,7 @@ import random
 import re
 import sys
 
-from .utils import request
+from .thttp import request
 
 
 SSO_LOGIN_URL = "https://sso.garmin.com/sso/signin"

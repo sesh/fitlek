@@ -31,12 +31,12 @@ if __name__ == "__main__":
     args = parse_args(sys.argv)
 
     duration = get_or_throw(
-        args, "--duration", "The --duration value is required (format: HH:MM)"
+        args, "--duration", "The --duration value is required (format: MM:SS)"
     )
     target_pace = get_or_throw(
         args,
         "--target-pace",
-        "The --target-pace value is required (format: MM:MM - mins/km)",
+        "The --target-pace value is required (format: MM:SS - mins/km)",
     )
 
     if not "--dry-run" in args:

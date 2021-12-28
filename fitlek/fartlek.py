@@ -40,12 +40,14 @@ def fartlek(target_time):
     return workout
 
 
-def create_fartlek_workout(duration, target_pace):
+def create_fartlek_workout(duration, target_pace, name=None):
     workout_steps = fartlek(duration)
     target_min = round(pace_to_ms(target_pace), 1)
     target_max = round(pace_to_ms(target_pace) * 0.85, 1)
 
-    w = Workout("running", f"Fitlek ({duration})")
+    if not name:
+        name = f"Fitlek ({duration})"
+    w = Workout("running", name)
     w.add_step(
         WorkoutStep(
             1,

@@ -32,6 +32,7 @@ def upload_to_intervals(workout, athlete_id, api_key):
         workout_str += f"- {step.end_condition_value.replace(':', 'm')}s {paces[step.step_type]} Pace\n\n"
 
     print(workout_str)
+
     # upload our workout to that folder
     response = request(f"https://intervals.icu/api/v1/athlete/{athlete_id}/workouts", basic_auth=("API_KEY", api_key), method="post", json=[{
 		"athlete_id": "i42258",

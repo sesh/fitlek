@@ -21,11 +21,12 @@ def upload_to_intervals(workout, athlete_id, api_key):
     # create the workout string
     workout_str = ""
     paces = {
-        "warmup": "70%",
-        "interval": "100%",
-        "recovery": "80%",
-        "cooldown": "70%"
+        "warmup": "60-80%",
+        "interval": "95-105%",
+        "recovery": "80-90%",
+        "cooldown": "60-80%"
     }
+
     for step in workout.workout_steps:
         workout_str += step.step_type + "\n"
         workout_str += f"- {step.end_condition_value.replace(':', 'm')}s {paces[step.step_type]} Pace\n\n"
@@ -40,6 +41,5 @@ def upload_to_intervals(workout, athlete_id, api_key):
 		"name": workout.workout_name,
 		"type": "Run",
     }])
-    print(response.json)
 
-    
+    return response.json

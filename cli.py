@@ -5,6 +5,12 @@ import sys
 from fitlek.garmin import GarminClient
 from fitlek.fartlek import create_fartlek_workout
 
+try:
+    from fitlek.getfit import getfit_download
+    ENABLE_GETFIT = True
+except ImportError:
+    ENABLE_GETFIT = False
+
 
 def parse_args(args):
     result = {
@@ -39,7 +45,13 @@ if __name__ == "__main__":
         "The --target-pace value is required (format: MM:SS - mins/km)",
     )
 
-    if not "--dry-run" in args:
+    workout = create_fartlek_workout(duration, target_pace)
+
+    if '--dry-run' in args:
+        print(json.dumps(workout.garminconnect_json(), indent=2))
+    elif ENABLE_GETFIT and '--fit' in args:
+        getfit_download(workout)
+    else:
         username = get_or_throw(
             args, "--username", "The Garmin Connect --username value is required"
         )
@@ -47,11 +59,6 @@ if __name__ == "__main__":
             args, "--password", "The Garmin Connect --password value is required"
         )
 
-    workout = create_fartlek_workout(duration, target_pace)
-
-    if '--dry-run' in args:
-        print(json.dumps(workout.json(), indent=2))
-    else:
         client = GarminClient(username, password)
         client.connect()
         client.add_workout(workout)

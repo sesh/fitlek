@@ -5,7 +5,7 @@ from .thttp import request
 GETFIT_URL = "https://getfitfile.azurewebsites.net/api/getfitfromjson"
 
 
-def getfit_download(workout):
+def getfit_download(workout, save=True):
     j = {
         "name": "GetFIT Test",
         "steps": [{
@@ -16,11 +16,12 @@ def getfit_download(workout):
         } for step in workout.workout_steps]
     }
 
-    print(json.dumps(j, indent=2))
-    response = request(GETFIT_URL, json=j, method="POST")
-    
+    response = request(GETFIT_URL, json=j, method="POST")    
     if response.status == 200:
-        with open("fitlek.fit", "wb") as f:
-            f.write(response.content)
+        if save:
+            with open("fitlek.fit", "wb") as f:
+                f.write(response.content)
+        else:
+            return response.content
     else:
         print(response.content)

@@ -74,7 +74,7 @@ class GarminClient:
         response = request(
             "https://connect.garmin.com/modern/proxy/workout-service/workout",
             method="POST",
-            json=workout.json(),
+            json=workout.garminconnect_json(),
             headers={
                 "Referer": "https://connect.garmin.com/modern/workout/create/running",
                 "NK": "NT",

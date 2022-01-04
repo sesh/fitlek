@@ -29,7 +29,7 @@ class Workout:
     def add_step(self, step):
         self.workout_steps.append(step)
 
-    def json(self):
+    def garminconnect_json(self):
         return {
             "sportType": {
                 "sportTypeId": SPORT_TYPES[self.sport_type],
@@ -43,7 +43,7 @@ class Workout:
                         "sportTypeId": SPORT_TYPES[self.sport_type],
                         "sportTypeKey": self.sport_type,
                     },
-                    "workoutSteps": [step.json() for step in self.workout_steps],
+                    "workoutSteps": [step.garminconnect_json() for step in self.workout_steps],
                 }
             ],
         }
@@ -87,7 +87,7 @@ class WorkoutStep:
         else:
             return None
 
-    def json(self):
+    def garminconnect_json(self):
         return {
             "type": "ExecutableStepDTO",
             "stepId": None,
@@ -106,7 +106,7 @@ class WorkoutStep:
             "endConditionValue": self.parsed_end_condition_value(),
             "endConditionCompare": None,
             "endConditionZone": None,
-            **self.target.json(),
+            **self.target.garminconnect_json(),
         }
 
 
@@ -117,7 +117,7 @@ class Target:
         self.from_value = from_value
         self.zone = zone
 
-    def json(self):
+    def garminconnect_json(self):
         return {
             "targetType": {
                 "workoutTargetTypeId": TARGET_TYPES[self.target],

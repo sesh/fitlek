@@ -1,8 +1,8 @@
 import json
-from .utils import request
+from .thttp import request
 
 
-GETFIT_URL = "http://localhost:7071/api/getfitfromjson"
+GETFIT_URL = "https://getfitfile.azurewebsites.net/api/getfitfromjson"
 
 
 def getfit_download(workout):
@@ -17,8 +17,10 @@ def getfit_download(workout):
     }
 
     print(json.dumps(j, indent=2))
-
     response = request(GETFIT_URL, json=j, method="POST")
     
-    with open("fitlek.fit", "wb") as f:
-        f.write(response.content)
+    if response.status == 200:
+        with open("fitlek.fit", "wb") as f:
+            f.write(response.content)
+    else:
+        print(response.content)

@@ -9,6 +9,7 @@ try:
     from fitlek.getfit import getfit_download
     ENABLE_GETFIT = True
 except ImportError:
+    print("Getfit disabled")
     ENABLE_GETFIT = False
 
 

@@ -7,8 +7,6 @@ def upload_to_intervals(workout, athlete_id, api_key):
     
     # check to see if the Run Randomly folder already exists
     response = request(f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders", basic_auth=("API_KEY", api_key))
-    print(response.json)
-
     folders = [x for x in response.json if x['name'] == 'Run Randomly' and x['type'] == 'FOLDER']
 
     # create a folder if it doesn't exist

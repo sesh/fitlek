@@ -2,11 +2,13 @@ from .thttp import request
 
 
 def upload_to_intervals(workout, athlete_id, api_key):
-    # url = "https://intervals.icu/api/v1/athlete/{athlete_id}/workouts"
     url = f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders"
-    
+
     # check to see if the Run Randomly folder already exists
-    response = request(f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders", basic_auth=("API_KEY", api_key))
+    response = request(f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders", headers={
+        'Authorization': f"Bearer {api_key}",
+    })
+
     folders = [x for x in response.json if x['name'] == 'Run Randomly' and x['type'] == 'FOLDER']
 
     # create a folder if it doesn't exist

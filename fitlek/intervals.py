@@ -13,7 +13,10 @@ def upload_to_intervals(workout, athlete_id, api_key):
 
     # create a folder if it doesn't exist
     if not folders:
-        response = request(f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders", basic_auth=("API_KEY", api_key), json={"name": "Run Randomly", "type": "FOLDER"}, method='post')
+        response = request(f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders", json={"name": "Run Randomly", "type": "FOLDER"}, method='post', headers={
+            'Authorization': f"Bearer {api_key}",
+        })
+        print(response.json)
         folder = response.json
     else:
         folder = folders[0]
@@ -22,8 +25,8 @@ def upload_to_intervals(workout, athlete_id, api_key):
     workout_str = ""
     paces = {
         "warmup": "60-80%",
-        "interval": "95-105%",
-        "recovery": "80-90%",
+        "interval": "90-120%",
+        "recovery": "60-90%",
         "cooldown": "60-80%"
     }
 
@@ -31,16 +34,15 @@ def upload_to_intervals(workout, athlete_id, api_key):
         workout_str += step.step_type + "\n"
         workout_str += f"- {step.end_condition_value.replace(':', 'm')}s {paces[step.step_type]} Pace\n\n"
 
-    print(workout_str)
-
     # upload our workout to that folder
-    response = request(f"https://intervals.icu/api/v1/athlete/{athlete_id}/workouts", basic_auth=("API_KEY", api_key), method="post", json=[{
-		"athlete_id": "i42258",
+    response = request(f"https://intervals.icu/api/v1/athlete/{athlete_id}/workouts", method="post", json=[{
 		"description": workout_str,
 		"folder_id": folder['id'],
 		"indoor": False,
 		"name": workout.workout_name,
 		"type": "Run",
-    }])
+    }], headers={
+        'Authorization': f"Bearer {api_key}",
+    })
 
     return response.json

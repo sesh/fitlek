@@ -2,6 +2,12 @@
 
 It's called `FITlek` because the original intention was to create a `.fit` file that you could upload directly to your watch. That might still happen but going directly to Garmin is working for me right now..
 
+---
+
+If you just want to give this a go, check out [Run Randomly](https://runrandomly.com)! That's a hosted version of this script with support for downloading FIT files and syncing to [Intervals](https://intervals.icu).
+
+---
+
 
 ### Usage
 

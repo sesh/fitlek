@@ -1,6 +1,6 @@
 import re
-from .thttp import request
 
+from .thttp import request
 
 SSO_LOGIN_URL = "https://sso.garmin.com/sso/signin"
 

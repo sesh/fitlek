@@ -1,6 +1,5 @@
 from .thttp import request
 
-
 GETFIT_URL = "https://getfitfile.azurewebsites.net/api/getfitfromjson"
 
 

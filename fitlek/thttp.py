@@ -6,23 +6,20 @@ https://github.com/sesh/thttp
 """
 
 import gzip
-import ssl
 import json as json_lib
-
+import ssl
 from base64 import b64encode
 from collections import namedtuple
-
 from http.cookiejar import CookieJar
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import (
-    Request,
-    build_opener,
+    HTTPCookieProcessor,
     HTTPRedirectHandler,
     HTTPSHandler,
-    HTTPCookieProcessor,
+    Request,
+    build_opener,
 )
-
 
 Response = namedtuple("Response", "request content json status url headers cookiejar")
 

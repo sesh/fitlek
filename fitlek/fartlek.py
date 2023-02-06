@@ -1,7 +1,7 @@
 import random
 
 from .utils import mmss_to_seconds, pace_to_ms, seconds_to_mmss
-from .workout import Workout, WorkoutStep, Target
+from .workout import Target, Workout, WorkoutStep
 
 
 def fartlek(target_time):

@@ -2,8 +2,8 @@
 import json
 import sys
 
-from fitlek.garmin import GarminClient
 from fitlek.fartlek import create_fartlek_workout
+from fitlek.garmin import GarminClient
 
 try:
     from fitlek.getfit import getfit_download

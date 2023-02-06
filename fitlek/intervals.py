@@ -1,10 +1,8 @@
 from .thttp import request
 
 
-def upload_str_to_intervals(
-    workout_str, workout_name, athlete_id, api_key, folder_name="Run Randomly"
-):
-    url = f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders"
+def upload_str_to_intervals(workout_str, workout_name, athlete_id, api_key, folder_name="Run Randomly"):
+    f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders"
 
     # check to see if the Run Randomly folder already exists
     response = request(
@@ -14,9 +12,7 @@ def upload_str_to_intervals(
         },
     )
 
-    folders = [
-        x for x in response.json if x["name"] == folder_name and x["type"] == "FOLDER"
-    ]
+    folders = [x for x in response.json if x["name"] == folder_name and x["type"] == "FOLDER"]
 
     # create a folder if it doesn't exist
     if not folders:
@@ -55,7 +51,7 @@ def upload_str_to_intervals(
 
 
 def upload_to_intervals(workout, athlete_id, api_key, folder_name="Run Randomly"):
-    url = f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders"
+    f"https://intervals.icu/api/v1/athlete/{athlete_id}/folders"
 
     # check to see if the Run Randomly folder already exists
     response = request(
@@ -65,9 +61,7 @@ def upload_to_intervals(workout, athlete_id, api_key, folder_name="Run Randomly"
         },
     )
 
-    folders = [
-        x for x in response.json if x["name"] == folder_name and x["type"] == "FOLDER"
-    ]
+    folders = [x for x in response.json if x["name"] == folder_name and x["type"] == "FOLDER"]
 
     # create a folder if it doesn't exist
     if not folders:

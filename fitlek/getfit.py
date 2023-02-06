@@ -1,4 +1,3 @@
-import json
 from .thttp import request
 
 
@@ -12,12 +11,8 @@ def getfit_download(workout_name, workout, save=True):
             {
                 "intensity": step.step_type,
                 "duration": int(step.parsed_end_condition_value()),
-                "targetSpeedLow": step.target.from_value
-                if step.target.from_value
-                else None,
-                "targetSpeedHigh": step.target.to_value
-                if step.target.to_value
-                else None,
+                "targetSpeedLow": step.target.from_value if step.target.from_value else None,
+                "targetSpeedHigh": step.target.to_value if step.target.to_value else None,
             }
             for step in workout.workout_steps
         ],

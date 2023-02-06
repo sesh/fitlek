@@ -31,16 +31,14 @@ def parse_args(args):
 def get_or_throw(d, key, error):
     try:
         return d[key]
-    except:
+    except:  # noqa: E722
         raise Exception(error)
 
 
 if __name__ == "__main__":
     args = parse_args(sys.argv)
 
-    duration = get_or_throw(
-        args, "--duration", "The --duration value is required (format: MM:SS)"
-    )
+    duration = get_or_throw(args, "--duration", "The --duration value is required (format: MM:SS)")
     target_pace = get_or_throw(
         args,
         "--target-pace",
@@ -54,17 +52,11 @@ if __name__ == "__main__":
     elif ENABLE_GETFIT and "--fit" in args:
         getfit_download(workout)
     else:
-        username = get_or_throw(
-            args, "--username", "The Garmin Connect --username value is required"
-        )
-        password = get_or_throw(
-            args, "--password", "The Garmin Connect --password value is required"
-        )
+        username = get_or_throw(args, "--username", "The Garmin Connect --username value is required")
+        password = get_or_throw(args, "--password", "The Garmin Connect --password value is required")
 
         client = GarminClient(username, password)
         client.connect()
         client.add_workout(workout)
 
-        print(
-            "Added workout. Check https://connect.garmin.com/modern/workouts and get ready to run!"
-        )
+        print("Added workout. Check https://connect.garmin.com/modern/workouts and get ready to run!")

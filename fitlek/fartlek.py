@@ -59,11 +59,7 @@ def create_fartlek_workout(duration, target_pace, name=None):
 
     for i, step in enumerate(workout_steps[:-1]):
         step_type = "interval" if i % 2 == 0 else "recovery"
-        target = (
-            Target("pace.zone", target_min, target_max)
-            if step_type == "interval"
-            else Target()
-        )
+        target = Target("pace.zone", target_min, target_max) if step_type == "interval" else Target()
         w.add_step(
             WorkoutStep(
                 i + 2,

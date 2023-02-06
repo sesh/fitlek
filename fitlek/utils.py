@@ -1,19 +1,3 @@
-import json as json_lib
-import ssl
-from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
-from urllib.request import (
-    Request,
-    urlopen,
-    build_opener,
-    HTTPRedirectHandler,
-    HTTPSHandler,
-    HTTPCookieProcessor,
-)
-from collections import namedtuple
-from http.cookiejar import CookieJar
-
-
 def mmss_to_seconds(s):
     parts = s.split(":")
 

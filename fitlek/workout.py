@@ -43,9 +43,7 @@ class Workout:
                         "sportTypeId": SPORT_TYPES[self.sport_type],
                         "sportTypeKey": self.sport_type,
                     },
-                    "workoutSteps": [
-                        step.garminconnect_json() for step in self.workout_steps
-                    ],
+                    "workoutSteps": [step.garminconnect_json() for step in self.workout_steps],
                 }
             ],
         }

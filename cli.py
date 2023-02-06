@@ -7,6 +7,7 @@ from fitlek.fartlek import create_fartlek_workout
 
 try:
     from fitlek.getfit import getfit_download
+
     ENABLE_GETFIT = True
 except ImportError:
     print("Getfit disabled")
@@ -48,9 +49,9 @@ if __name__ == "__main__":
 
     workout = create_fartlek_workout(duration, target_pace)
 
-    if '--dry-run' in args:
+    if "--dry-run" in args:
         print(json.dumps(workout.garminconnect_json(), indent=2))
-    elif ENABLE_GETFIT and '--fit' in args:
+    elif ENABLE_GETFIT and "--fit" in args:
         getfit_download(workout)
     else:
         username = get_or_throw(

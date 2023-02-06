@@ -241,6 +241,7 @@ class RequestTestCase(unittest.TestCase):
 
     def test_should_timeout(self):
         import socket
+
         with self.assertRaises((TimeoutError, socket.timeout)):
             response = request("http://httpbingo.org/delay/3", timeout=1)
 

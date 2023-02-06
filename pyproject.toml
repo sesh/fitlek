@@ -6,3 +6,6 @@ line-length = 120
 
 [tool.isort]
 profile = "black"
+
+[tool.bandit]
+skips = ["B311"]

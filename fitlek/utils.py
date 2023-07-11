@@ -37,7 +37,9 @@ def pace_to_ms(pace):
 
 def workout_str(workout_steps, pace):
     warmup = workout_steps[0]
-    efforts = [seconds_to_mmss(x) for i, x in enumerate(workout_steps[1:-1]) if i % 2 == 0]
+    efforts = [
+        seconds_to_mmss(x) for i, x in enumerate(workout_steps[1:-1]) if i % 2 == 0
+    ]
     cooldown = workout_steps[-1]
 
     s = f"{seconds_to_mmss(warmup)} WU. "
@@ -45,4 +47,3 @@ def workout_str(workout_steps, pace):
     s += f"{seconds_to_mmss(cooldown)} CD."
 
     return s
-

@@ -4,7 +4,7 @@ from .utils import mmss_to_seconds, pace_to_ms, seconds_to_mmss
 from .workout import Workout, WorkoutStep, Target
 
 
-def fartlek(target_time):
+def generate_fartlek(target_time):
     target_seconds = mmss_to_seconds(target_time)
 
     if target_seconds >= 40 * 60:
@@ -40,8 +40,7 @@ def fartlek(target_time):
     return workout
 
 
-def create_fartlek_workout(duration, target_pace, name=None):
-    workout_steps = fartlek(duration)
+def create_fartlek_workout_from_steps(workout_steps, target_pace, name=None):
     target_min = round(pace_to_ms(target_pace) * 1.10, 2)
     target_max = round(pace_to_ms(target_pace) * 0.9, 2)
 
@@ -83,4 +82,10 @@ def create_fartlek_workout(duration, target_pace, name=None):
         )
     )
 
+    return w
+
+
+def create_fartlek_workout(duration, target_pace, name=None):
+    workout_steps = generate_fartlek(duration)
+    w = create_fartlek_workout_from_steps(workout_steps, target_pace, name)
     return w

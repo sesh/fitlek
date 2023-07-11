@@ -33,3 +33,16 @@ def pace_to_ms(pace):
     seconds = mmss_to_seconds(pace)
     km_h = 60 / (seconds / 60)
     return km_h * 0.27778
+
+
+def workout_str(workout_steps, pace):
+    warmup = workout_steps[0]
+    efforts = [seconds_to_mmss(x) for i, x in enumerate(workout_steps[1:-1]) if i % 2 == 0]
+    cooldown = workout_steps[-1]
+
+    s = f"{seconds_to_mmss(warmup)} WU. "
+    s += f"{', '.join(efforts)} @ {pace} min/km. "
+    s += f"{seconds_to_mmss(cooldown)} CD."
+
+    return s
+

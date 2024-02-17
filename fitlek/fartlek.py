@@ -40,13 +40,16 @@ def generate_fartlek(target_time):
     return workout
 
 
-def create_fartlek_workout_from_steps(workout_steps, target_pace, name=None):
-    target_min = round(pace_to_ms(target_pace) * 1.10, 2)
-    target_max = round(pace_to_ms(target_pace) * 0.9, 2)
+def create_fartlek_workout_from_steps(workout_steps, *, target_pace=None, workout_name=None, workout_type="running"):
+    if target_pace:
+        target_min = round(pace_to_ms(target_pace) * 1.10, 2)
+        target_max = round(pace_to_ms(target_pace) * 0.9, 2)
 
-    if not name:
-        name = f"Fitlek ({duration})"
-    w = Workout("running", name)
+    if not workout_name:
+        workout_name = f"Fitlek ({duration})"
+
+    w = Workout(workout_type, workout_name)
+
     w.add_step(
         WorkoutStep(
             1,
@@ -58,11 +61,12 @@ def create_fartlek_workout_from_steps(workout_steps, target_pace, name=None):
 
     for i, step in enumerate(workout_steps[:-1]):
         step_type = "interval" if i % 2 == 0 else "recovery"
-        target = (
-            Target("pace.zone", target_min, target_max)
-            if step_type == "interval"
-            else Target()
-        )
+        if target_pace:
+            target = (
+                Target("pace.zone", target_min, target_max)
+                if step_type == "interval"
+                else Target()
+            )
         w.add_step(
             WorkoutStep(
                 i + 2,
